@@ -1,11 +1,23 @@
 const express = require("express");
-const bodyParser = require('body-parser'); 
-var cors = require('cors');
+const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt");
+var cors = require("cors");
 
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-const myPlaintextPassword = 's0/\/\P4$$w0rD';
-const someOtherPlaintextPassword = 'not_bacon';
+const signin = require("./controllers/signin")
+const register = require("./controllers/register");
+const profile = require("./controllers/profile")
+const image = require("./controllers/image")
+
+const knex = require("knex")({
+  client: "pg",
+  connection: {
+    host: "127.0.0.1",
+    port: 5432,
+    user: "postgres",
+    password: "test",
+    database: "smartbrain",
+  },
+});
 
 const app = express();
 
@@ -32,80 +44,35 @@ const database = {
     {
       id: "987",
       hash: "",
-      email: "max@gmail.com"
-    }
-  ]
+      email: "max@gmail.com",
+    },
+  ],
 };
 
 app.use(bodyParser.json());
-app.use(cors())
- 
-app.get('/products/:id', function (req, res, next) {
-  res.json({msg: 'This is CORS-enabled for all origins!'})
-})
- 
+app.use(cors());
+
+/*/                --> res = this is working
+/signin          --> POST = success/fail
+/register        --> POST = user
+/profile/:userId --> GET = user
+/image           --> PUT = user
+*/
+
+app.get("/products/:id", function (req, res, next) {
+  res.json({ msg: "This is CORS-enabled for all origins!" });
+});
+
 app.listen(80, function () {
-  console.log('CORS-enabled web server listening on port 80')
-})
-
-app.get("/", (req, res) => {
-  res.send(database.users);
+  console.log("CORS-enabled web server listening on port 80");
 });
 
-app.post("/signin", (req, res) => {
-  if (
-    req.body.email === database.users[0].email &&
-    req.body.password === database.users[0].password
-  ) {
-    res.json(database.users[0]);
-  } else {
-    res.status(400).json('error logging in')
-  }
-});
-
-app.post("/register", (req, res) => {
-  const { email, password, name } = req.body;
-  database.users.push({
-    id: "125",
-    name: name,
-    email: email,
-    entries: 0,
-    joined: new Date(),
-  })
-  res.json(database.users[database.users.length-1]);
-})
-
-app.get("/profile/:id", (req, res) => {
-  const { id } = req.params;
-  let found = false;
-  database.users.forEach(user => {
-    if (user.id === id) {
-      found = true;
-      return res.json(user);
-    } 
-  })
-  if (!found) {
-    res.status(404).json("no such user");
-  }  
-});
-
-app.put("/image", (req, res) => {
-  const { id } = req.body;
-  let found = false;
-  database.users.forEach(user => {
-    if (user.id === id) {
-      found = true;
-      user.entries++
-      return res.json(user.entries);
-    } 
-  })
-  if (!found) {
-    res.status(404).json("no such user");
-  }  
-})
-
-
-
+app.get("/", (req, res) => { res.send(database.users) });
+app.post("/signin", (req, res) => {signin.handleSignin(req, res, knex, bcrypt)});
+app.post('/register', (req, res) => {register.handleRegister(req, res, knex, bcrypt)});
+app.get("/profile/:id", (req, res) => {profile.handleProfile(req, res, knex)});
+app.put("/image", (req, res) => {image.hanleImage(req, res, knex)});
+app.post("/imageurl", (req, res) => {image.handleApiCall(req, res)});
 
 app.listen(3000, () => {
   console.log("app is running on port 3000");
@@ -116,7 +83,7 @@ app.listen(3000, () => {
 //   // Store hash in your password DB.
 // });
 
-  // Load hash from your password DB.
+// Load hash from your password DB.
 // bcrypt.compare("apple", "$2b$10$pTQ0ycgwb09nRxUXQF1PkOdxHeMBbucXkYlsxhLu8k0TADvj/jknC", function(err, result) {
 //   // result == true
 //   console.log("first guess", res)
@@ -125,12 +92,3 @@ app.listen(3000, () => {
 //   // result == false
 //   console.log("second guess", res)
 // });
-
-
-/*
-/                --> res = this is working
-/signin          --> POST = success/fail
-/register        --> POST = user
-/profile/:userId --> GET = user
-/image           --> PUT = user
-*/
