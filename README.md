@@ -8,10 +8,14 @@ The following sources are also applied in the app:
 - Background pattern: CSS3 Pattern Gallary https://projects.verou.me/css3patterns/ 
 - Icons library: https://icons8.com/icon
 
+# Backend:
+- Using Postman for requesting from API
+- Using PostgreSQL 15 (PgAdmin) for DataBase Management
+- using bcrypt for password security
+- using KNEX to connect backend & database
 
 ## Source
 
 Based on the course "The Complete Web Developer in 2023: Zero to Mastery" by Andrei Neagoie  [Course](https://www.udemy.com/course/the-complete-web-developer-zero-to-mastery/)
 
-### Architecture:
 
