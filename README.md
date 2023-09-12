@@ -1,4 +1,12 @@
 #Brain-Detection-App
+
+Running Instruction:
+1. Clone this repo 
+2. Run npm install (for both Frontend & Server)
+3. Run npm start (for both Frontend & Server)
+4. In Backend: You must add your own API PAT and USER_ID in the controllers/image.js file to connect to Clarifai API
+5. In Backend: Add your own database credentials to server.js line 11
+
 # 📣 **Summary**
 
 This application (**Brain-Detection-App**) is built by using React library, Tachyons for Styling, and Clarifai Machin Learning to use REST API. 
